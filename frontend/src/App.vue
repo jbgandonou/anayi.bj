@@ -13,20 +13,3 @@ const authStore = useAuthStore()
   </AppLayout>
   <router-view v-else />
 </template>
-
-<style>
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  color: #1f2937;
-  background: #f3f4f6;
-  -webkit-font-smoothing: antialiased;
-}
-</style>

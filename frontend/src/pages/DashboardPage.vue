@@ -44,43 +44,70 @@ function statusClass(status: string) {
 
 <template>
   <div class="dashboard-page">
-    <h1>Tableau de bord</h1>
+    <div class="page-title">
+      <h1>Tableau de bord</h1>
+      <p class="subtitle">Vue d'ensemble du programme Anayi</p>
+    </div>
 
-    <div v-if="loading" class="loading">Chargement...</div>
+    <div v-if="loading" class="loading">
+      <div class="loading-spinner"></div>
+      <span>Chargement des données...</span>
+    </div>
 
     <template v-else-if="stats">
       <!-- Stat cards -->
       <div class="stat-cards">
         <div class="stat-card">
-          <span class="stat-value">{{ stats.totalChildren }}</span>
-          <span class="stat-label">Bénéficiaires</span>
+          <div class="stat-icon">👦</div>
+          <div class="stat-content">
+            <span class="stat-value">{{ stats.totalChildren }}</span>
+            <span class="stat-label">Bénéficiaires</span>
+          </div>
         </div>
         <div class="stat-card stat-pending">
-          <span class="stat-value">{{ stats.sponsorship.pending }}</span>
-          <span class="stat-label">En attente</span>
+          <div class="stat-icon">⏳</div>
+          <div class="stat-content">
+            <span class="stat-value">{{ stats.sponsorship.pending }}</span>
+            <span class="stat-label">En attente</span>
+          </div>
         </div>
         <div class="stat-card stat-sponsored">
-          <span class="stat-value">{{ stats.sponsorship.sponsored }}</span>
-          <span class="stat-label">Parrainés</span>
+          <div class="stat-icon">🤝</div>
+          <div class="stat-content">
+            <span class="stat-value">{{ stats.sponsorship.sponsored }}</span>
+            <span class="stat-label">Parrainés</span>
+          </div>
         </div>
         <div class="stat-card stat-not-eligible">
-          <span class="stat-value">{{ stats.sponsorship.notEligible }}</span>
-          <span class="stat-label">Non éligibles</span>
+          <div class="stat-icon">⛔</div>
+          <div class="stat-content">
+            <span class="stat-value">{{ stats.sponsorship.notEligible }}</span>
+            <span class="stat-label">Non éligibles</span>
+          </div>
         </div>
         <div class="stat-card">
-          <span class="stat-value">{{ stats.totalDocuments }}</span>
-          <span class="stat-label">Documents</span>
+          <div class="stat-icon">📄</div>
+          <div class="stat-content">
+            <span class="stat-value">{{ stats.totalDocuments }}</span>
+            <span class="stat-label">Documents</span>
+          </div>
         </div>
         <div class="stat-card">
-          <span class="stat-value">{{ stats.totalSurveys }}</span>
-          <span class="stat-label">Enquêtes</span>
+          <div class="stat-icon">📋</div>
+          <div class="stat-content">
+            <span class="stat-value">{{ stats.totalSurveys }}</span>
+            <span class="stat-label">Enquêtes</span>
+          </div>
         </div>
       </div>
 
       <div class="dashboard-grid">
         <!-- Derniers enfants enregistrés -->
         <section class="card">
-          <h2>Derniers enregistrements</h2>
+          <div class="card-header">
+            <h2>Derniers enregistrements</h2>
+            <router-link to="/children" class="card-link">Voir tout</router-link>
+          </div>
           <div v-if="!stats.recentChildren.length" class="empty">Aucun enregistrement</div>
           <div v-else class="recent-list">
             <router-link
@@ -89,23 +116,23 @@ function statusClass(status: string) {
               :to="`/children/${child.id}`"
               class="recent-item"
             >
-              <div>
+              <div class="recent-avatar">{{ child.firstName[0] }}{{ child.lastName[0] }}</div>
+              <div class="recent-info">
                 <strong>{{ child.firstName }} {{ child.lastName }}</strong>
-                <span class="recent-ref">{{ child.reference }}</span>
+                <span class="recent-meta">{{ child.village }} · {{ child.reference }}</span>
               </div>
-              <div class="recent-meta">
-                <span>{{ child.village }}</span>
-                <span class="badge" :class="statusClass(child.sponsorshipStatus)">
-                  {{ statusLabel(child.sponsorshipStatus) }}
-                </span>
-              </div>
+              <span class="badge" :class="statusClass(child.sponsorshipStatus)">
+                {{ statusLabel(child.sponsorshipStatus) }}
+              </span>
             </router-link>
           </div>
         </section>
 
         <!-- Répartition par village -->
         <section class="card">
-          <h2>Répartition par village</h2>
+          <div class="card-header">
+            <h2>Répartition par village</h2>
+          </div>
           <div v-if="!stats.childrenByVillage.length" class="empty">Aucune donnée</div>
           <div v-else class="village-list">
             <div v-for="v in stats.childrenByVillage" :key="v.village" class="village-item">
@@ -126,88 +153,125 @@ function statusClass(status: string) {
 </template>
 
 <style scoped>
-.dashboard-page h1 { font-size: 1.5rem; margin-bottom: 1.5rem; }
+.page-title { margin-bottom: 1.75rem; }
+.page-title h1 { font-size: 1.6rem; font-weight: 800; color: var(--text); letter-spacing: -0.02em; margin-bottom: 0.15rem; }
+.subtitle { color: var(--text-muted); font-size: 0.9rem; }
 
 .stat-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.75rem;
 }
 
 .stat-card {
-  background: white;
+  background: var(--bg-card);
   padding: 1.25rem;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  text-align: center;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
   display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  border-top: 3px solid #1a56db;
+  align-items: center;
+  gap: 1rem;
+  border-left: 4px solid var(--primary);
+  transition: all 0.2s;
+}
+.stat-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
-.stat-pending { border-top-color: #f59e0b; }
-.stat-sponsored { border-top-color: #10b981; }
-.stat-not-eligible { border-top-color: #ef4444; }
+.stat-pending { border-left-color: var(--accent); }
+.stat-sponsored { border-left-color: var(--success); }
+.stat-not-eligible { border-left-color: var(--danger); }
 
-.stat-value { font-size: 1.75rem; font-weight: 700; color: #111827; }
-.stat-label { font-size: 0.8rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; }
+.stat-icon { font-size: 1.5rem; }
+.stat-content { display: flex; flex-direction: column; }
+.stat-value { font-size: 1.6rem; font-weight: 800; color: var(--text); letter-spacing: -0.02em; }
+.stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  gap: 1.25rem;
 }
 
 .card {
-  background: white;
-  padding: 1.25rem;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  background: var(--bg-card);
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
-.card h2 { font-size: 1rem; margin: 0 0 0.75rem; color: #1a56db; }
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+.card-header h2 { font-size: 1rem; font-weight: 700; color: var(--text); margin: 0; }
+.card-link { font-size: 0.8rem; color: var(--primary); text-decoration: none; font-weight: 600; }
+.card-link:hover { text-decoration: underline; }
 
 .recent-list { display: flex; flex-direction: column; }
 .recent-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0.6rem 0;
-  border-bottom: 1px solid #f3f4f6;
+  gap: 0.75rem;
+  padding: 0.75rem 0.5rem;
+  border-bottom: 1px solid var(--border);
   text-decoration: none;
   color: inherit;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s;
 }
 .recent-item:last-child { border-bottom: none; }
-.recent-item:hover { background: #f9fafb; margin: 0 -0.5rem; padding-left: 0.5rem; padding-right: 0.5rem; border-radius: 4px; }
-.recent-ref { font-size: 0.75rem; color: #6b7280; margin-left: 0.5rem; }
-.recent-meta { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: #6b7280; }
+.recent-item:hover { background: var(--bg); }
 
-.badge { padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 500; }
+.recent-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+.recent-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.recent-info strong { font-size: 0.875rem; color: var(--text); }
+.recent-meta { font-size: 0.75rem; color: var(--text-muted); }
+
+.badge { padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; }
 .badge-pending { background: #fef3c7; color: #92400e; }
 .badge-sponsored { background: #dcfce7; color: #166534; }
 .badge-not-eligible { background: #fee2e2; color: #991b1b; }
 
-.village-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.village-list { display: flex; flex-direction: column; gap: 0.65rem; }
 .village-item { display: flex; align-items: center; gap: 0.75rem; }
-.village-name { font-size: 0.875rem; min-width: 100px; }
-.village-bar-wrapper { flex: 1; background: #f3f4f6; border-radius: 4px; height: 8px; }
-.village-bar { height: 100%; background: #1a56db; border-radius: 4px; min-width: 4px; }
-.village-count { font-size: 0.875rem; font-weight: 600; color: #374151; min-width: 30px; text-align: right; }
+.village-name { font-size: 0.85rem; min-width: 100px; color: var(--text); font-weight: 500; }
+.village-bar-wrapper { flex: 1; background: var(--bg); border-radius: 20px; height: 10px; }
+.village-bar { height: 100%; background: linear-gradient(90deg, var(--primary), #818cf8); border-radius: 20px; min-width: 6px; transition: width 0.5s ease; }
+.village-count { font-size: 0.85rem; font-weight: 700; color: var(--text); min-width: 30px; text-align: right; }
 
-.loading, .empty { text-align: center; padding: 2rem; color: #6b7280; }
+.loading { text-align: center; padding: 3rem; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 0.75rem; }
+.loading-spinner {
+  width: 32px; height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.empty { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.9rem; }
 
 @media (max-width: 768px) {
   .stat-cards { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
-  .stat-value { font-size: 1.35rem; }
-  .stat-card { padding: 1rem; }
+  .stat-value { font-size: 1.3rem; }
+  .stat-card { padding: 1rem; gap: 0.75rem; }
+  .stat-icon { font-size: 1.2rem; }
   .dashboard-grid { grid-template-columns: 1fr; }
-  .recent-item { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
-  .recent-meta { margin-top: 0.15rem; }
+  .recent-item { flex-wrap: wrap; }
 }
 
 @media (max-width: 480px) {
   .stat-cards { grid-template-columns: repeat(2, 1fr); }
-  .dashboard-page h1 { font-size: 1.25rem; }
+  .page-title h1 { font-size: 1.3rem; }
 }
 </style>

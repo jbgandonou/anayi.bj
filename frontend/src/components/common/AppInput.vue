@@ -31,39 +31,46 @@ const model = defineModel<string | number>()
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.35rem;
 }
 
 .form-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
 }
 
 .required {
-  color: #dc2626;
+  color: var(--danger);
 }
 
 .form-input {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   font-size: 0.875rem;
-  transition: border-color 0.2s;
+  font-family: inherit;
+  color: var(--text);
+  background: white;
+  transition: all 0.2s;
+}
+
+.form-input::placeholder {
+  color: var(--text-muted);
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #1a56db;
-  box-shadow: 0 0 0 2px rgba(26, 86, 219, 0.15);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
 .input-error {
-  border-color: #dc2626;
+  border-color: var(--danger);
 }
 
 .error-text {
   font-size: 0.75rem;
-  color: #dc2626;
+  color: var(--danger);
 }
 </style>

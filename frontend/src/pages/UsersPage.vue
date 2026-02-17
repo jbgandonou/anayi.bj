@@ -67,50 +67,58 @@ onMounted(loadUsers)
 <template>
   <div class="users-page">
     <div class="page-header">
-      <h1>Gestion des utilisateurs</h1>
-      <AppButton @click="showCreateModal = true">Créer un utilisateur</AppButton>
+      <div>
+        <h1>Gestion des utilisateurs</h1>
+        <p class="subtitle">{{ users.length }} utilisateur{{ users.length > 1 ? 's' : '' }}</p>
+      </div>
+      <AppButton @click="showCreateModal = true">+ Créer un utilisateur</AppButton>
     </div>
 
-    <div v-if="loading" class="loading">Chargement...</div>
+    <div v-if="loading" class="loading">
+      <div class="loading-spinner"></div>
+      <span>Chargement...</span>
+    </div>
 
-    <table v-else class="users-table">
-      <thead>
-        <tr>
-          <th>Nom</th>
-          <th>Email</th>
-          <th>Téléphone</th>
-          <th>Rôle</th>
-          <th>Statut</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="user in users" :key="user.id">
-          <td>{{ user.firstName }} {{ user.lastName }}</td>
-          <td>{{ user.email }}</td>
-          <td>{{ user.phone || '-' }}</td>
-          <td>
-            <span class="badge" :class="user.role === 'ADMIN' ? 'badge-admin' : 'badge-volunteer'">
-              {{ user.role === 'ADMIN' ? 'Admin' : 'Volontaire' }}
-            </span>
-          </td>
-          <td>
-            <span class="badge" :class="user.isActive ? 'badge-active' : 'badge-inactive'">
-              {{ user.isActive ? 'Actif' : 'Inactif' }}
-            </span>
-          </td>
-          <td>
-            <AppButton
-              :variant="user.isActive ? 'danger' : 'secondary'"
-              size="sm"
-              @click="toggleActive(user)"
-            >
-              {{ user.isActive ? 'Désactiver' : 'Activer' }}
-            </AppButton>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div v-else class="table-wrapper">
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Email</th>
+            <th>Téléphone</th>
+            <th>Rôle</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="user in users" :key="user.id">
+            <td class="name-cell">{{ user.firstName }} {{ user.lastName }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.phone || '-' }}</td>
+            <td>
+              <span class="badge" :class="user.role === 'ADMIN' ? 'badge-admin' : 'badge-volunteer'">
+                {{ user.role === 'ADMIN' ? 'Admin' : 'Volontaire' }}
+              </span>
+            </td>
+            <td>
+              <span class="badge" :class="user.isActive ? 'badge-active' : 'badge-inactive'">
+                {{ user.isActive ? 'Actif' : 'Inactif' }}
+              </span>
+            </td>
+            <td>
+              <AppButton
+                :variant="user.isActive ? 'danger' : 'secondary'"
+                size="sm"
+                @click="toggleActive(user)"
+              >
+                {{ user.isActive ? 'Désactiver' : 'Activer' }}
+              </AppButton>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <AppModal v-if="showCreateModal" title="Créer un utilisateur" @close="showCreateModal = false">
       <form @submit.prevent="createUser" class="create-form">
@@ -144,42 +152,52 @@ onMounted(loadUsers)
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.75rem;
 }
+.page-header h1 { font-size: 1.6rem; font-weight: 800; color: var(--text); letter-spacing: -0.02em; margin: 0; }
+.subtitle { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.15rem; }
 
-.page-header h1 {
-  font-size: 1.5rem;
-  margin: 0;
+.table-wrapper {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow-x: auto;
 }
 
 .users-table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.users-table th,
-.users-table td {
-  padding: 0.75rem 1rem;
-  text-align: left;
-  border-bottom: 1px solid #e5e7eb;
-  font-size: 0.875rem;
 }
 
 .users-table th {
-  background: #f9fafb;
-  font-weight: 600;
-  color: #374151;
+  text-align: left;
+  padding: 0.85rem 1.25rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-weight: 700;
+  border-bottom: 2px solid var(--border);
+  background: var(--bg);
 }
 
+.users-table td {
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.875rem;
+}
+
+.users-table tbody tr { transition: background 0.1s; }
+.users-table tbody tr:hover { background: var(--bg); }
+
+.name-cell { font-weight: 600; color: var(--text); }
+
 .badge {
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 500;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  display: inline-block;
 }
 
 .badge-admin { background: #dbeafe; color: #1e40af; }
@@ -190,31 +208,48 @@ onMounted(loadUsers)
 .create-form {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.85rem;
 }
 
-.form-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
-}
-
+.form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+.form-label { font-size: 0.85rem; font-weight: 600; color: var(--text); }
 .form-select {
   width: 100%;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   font-size: 0.875rem;
+  font-family: inherit;
+  color: var(--text);
+  background: white;
+}
+.form-select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
 .error-text {
-  color: #dc2626;
+  color: var(--danger);
   font-size: 0.875rem;
 }
 
 .loading {
-  text-align: center;
-  padding: 2rem;
-  color: #6b7280;
+  text-align: center; padding: 3rem; color: var(--text-muted);
+  display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
+}
+.loading-spinner {
+  width: 32px; height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 768px) {
+  .page-header { flex-direction: column; align-items: stretch; gap: 0.75rem; }
+  .users-table th, .users-table td { padding: 0.6rem 0.75rem; font-size: 0.8rem; }
+  .page-header h1 { font-size: 1.3rem; }
 }
 </style>

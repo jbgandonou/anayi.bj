@@ -72,9 +72,12 @@ function statusClass(status: string) {
 <template>
   <div class="children-list-page">
     <div class="page-header">
-      <h1>Bénéficiaires <span class="count">({{ total }})</span></h1>
+      <div>
+        <h1>Bénéficiaires</h1>
+        <p class="subtitle">{{ total }} enfant{{ total > 1 ? 's' : '' }} enregistré{{ total > 1 ? 's' : '' }}</p>
+      </div>
       <router-link to="/children/new">
-        <AppButton>Enregistrer un enfant</AppButton>
+        <AppButton>+ Enregistrer un enfant</AppButton>
       </router-link>
     </div>
 
@@ -110,7 +113,10 @@ function statusClass(status: string) {
     </div>
 
     <!-- Liste -->
-    <div v-if="loading && !children.length" class="loading">Chargement...</div>
+    <div v-if="loading && !children.length" class="loading">
+      <div class="loading-spinner"></div>
+      <span>Chargement...</span>
+    </div>
 
     <div v-else-if="!children.length" class="empty">Aucun bénéficiaire trouvé</div>
 
@@ -150,52 +156,64 @@ function statusClass(status: string) {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.75rem;
 }
-.page-header h1 { font-size: 1.5rem; margin: 0; }
-.count { color: #6b7280; font-weight: 400; }
+.page-header h1 { font-size: 1.6rem; font-weight: 800; color: var(--text); letter-spacing: -0.02em; margin: 0; }
+.subtitle { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.15rem; }
 
 .filters {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
   margin-bottom: 1.5rem;
-  background: white;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  background: var(--bg-card);
+  padding: 1.25rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
-.form-group { display: flex; flex-direction: column; gap: 0.25rem; }
-.form-label { font-size: 0.875rem; font-weight: 500; color: #374151; }
+.form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+.form-label { font-size: 0.85rem; font-weight: 600; color: var(--text); }
 .form-input, .form-select {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   font-size: 0.875rem;
+  font-family: inherit;
+  color: var(--text);
+  background: white;
+  transition: border-color 0.2s;
+}
+.form-input:focus, .form-select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
 .children-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
   gap: 1rem;
 }
 
 .child-card {
   display: flex;
   gap: 1rem;
-  background: white;
-  padding: 1rem;
-  border-radius: 8px;
+  background: var(--bg-card);
+  padding: 1.15rem;
+  border-radius: var(--radius);
   text-decoration: none;
   color: inherit;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  transition: box-shadow 0.2s;
+  box-shadow: var(--shadow);
+  transition: all 0.2s;
 }
-.child-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+.child-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
 
 .card-photo {
-  width: 60px;
-  height: 60px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
@@ -203,32 +221,45 @@ function statusClass(status: string) {
 .card-photo img { width: 100%; height: 100%; object-fit: cover; }
 .photo-placeholder {
   width: 100%; height: 100%;
-  background: #1a56db;
+  background: linear-gradient(135deg, var(--primary), #818cf8);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
-  font-size: 1.1rem;
+  font-weight: 700;
+  font-size: 1rem;
 }
 
-.card-info h3 { font-size: 0.95rem; margin: 0 0 0.25rem; }
-.card-detail { font-size: 0.8rem; color: #6b7280; margin: 0; }
+.card-info h3 { font-size: 0.95rem; font-weight: 700; margin: 0 0 0.2rem; color: var(--text); }
+.card-detail { font-size: 0.8rem; color: var(--text-muted); margin: 0; }
 
 .badge {
   display: inline-block;
-  padding: 0.15rem 0.5rem;
-  border-radius: 4px;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
   font-size: 0.7rem;
-  font-weight: 500;
-  margin-top: 0.35rem;
+  font-weight: 600;
+  margin-top: 0.4rem;
 }
 .badge-pending { background: #fef3c7; color: #92400e; }
 .badge-sponsored { background: #dcfce7; color: #166534; }
 .badge-not-eligible { background: #fee2e2; color: #991b1b; }
 
 .load-more { text-align: center; padding: 1.5rem 0; }
-.loading, .empty { text-align: center; padding: 3rem; color: #6b7280; }
+
+.loading {
+  text-align: center; padding: 3rem; color: var(--text-muted);
+  display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
+}
+.loading-spinner {
+  width: 32px; height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.empty { text-align: center; padding: 3rem; color: var(--text-muted); }
 
 @media (max-width: 768px) {
   .page-header { flex-direction: column; align-items: stretch; gap: 0.75rem; }
@@ -238,6 +269,6 @@ function statusClass(status: string) {
 
 @media (max-width: 480px) {
   .filters { grid-template-columns: 1fr; }
-  .page-header h1 { font-size: 1.25rem; }
+  .page-header h1 { font-size: 1.3rem; }
 }
 </style>

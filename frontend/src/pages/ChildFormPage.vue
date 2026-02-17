@@ -121,7 +121,10 @@ async function confirmCreate() {
 
 <template>
   <div class="child-form-page">
-    <h1>Enregistrer un enfant bénéficiaire</h1>
+    <div class="page-title">
+      <h1>Enregistrer un enfant bénéficiaire</h1>
+      <p class="subtitle">Remplissez les informations étape par étape</p>
+    </div>
 
     <!-- Stepper -->
     <div class="stepper">
@@ -132,7 +135,7 @@ async function confirmCreate() {
         :class="{ active: step === i, completed: step > i }"
         @click="step = i"
       >
-        <span class="step-number">{{ i }}</span>
+        <span class="step-number">{{ step > i ? '✓' : i }}</span>
         <span class="step-label">{{ stepTitles[i - 1] }}</span>
       </div>
     </div>
@@ -306,33 +309,46 @@ async function confirmCreate() {
 </template>
 
 <style scoped>
-.child-form-page h1 {
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
-}
+.page-title { margin-bottom: 1.5rem; }
+.page-title h1 { font-size: 1.6rem; font-weight: 800; color: var(--text); letter-spacing: -0.02em; margin-bottom: 0.15rem; }
+.subtitle { color: var(--text-muted); font-size: 0.9rem; }
 
 .stepper {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
   overflow-x: auto;
+  padding-bottom: 0.25rem;
 }
 
 .step-item {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.4rem 0.75rem;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
   border-radius: 20px;
   font-size: 0.8rem;
   cursor: pointer;
-  background: #e5e7eb;
-  color: #6b7280;
+  background: var(--bg);
+  color: var(--text-muted);
   white-space: nowrap;
+  border: 1px solid var(--border);
+  transition: all 0.2s;
+  font-weight: 500;
 }
 
-.step-item.active { background: #1a56db; color: white; }
-.step-item.completed { background: #dcfce7; color: #166534; }
+.step-item.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3);
+}
+.step-item.completed {
+  background: #dcfce7;
+  color: #166534;
+  border-color: #bbf7d0;
+}
 
 .step-number {
   width: 22px;
@@ -342,21 +358,22 @@ async function confirmCreate() {
   justify-content: center;
   border-radius: 50%;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   background: rgba(255, 255, 255, 0.3);
 }
 
 .form-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  background: var(--bg-card);
+  padding: 1.75rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
 
 .form-step h2 {
-  font-size: 1.125rem;
-  margin-bottom: 1rem;
-  color: #374151;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  color: var(--text);
 }
 
 .form-grid {
@@ -370,20 +387,29 @@ async function confirmCreate() {
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.35rem;
 }
 
 .form-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
 }
 
 .form-select, .form-textarea, .form-file {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   font-size: 0.875rem;
+  font-family: inherit;
+  color: var(--text);
+  background: white;
+  transition: all 0.2s;
+}
+.form-select:focus, .form-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
 .form-textarea { resize: vertical; }
@@ -391,15 +417,15 @@ async function confirmCreate() {
 .form-actions {
   display: flex;
   align-items: center;
-  margin-top: 1.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e5e7eb;
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
 }
 
 .spacer { flex: 1; }
 
 .error-text {
-  color: #dc2626;
+  color: var(--danger);
   font-size: 0.875rem;
   margin-top: 1rem;
 }
@@ -415,6 +441,7 @@ async function confirmCreate() {
   .stepper { gap: 0.35rem; }
   .step-label { display: none; }
   .form-grid { grid-template-columns: 1fr; }
-  .form-card { padding: 1rem; }
+  .form-card { padding: 1.25rem; }
+  .page-title h1 { font-size: 1.3rem; }
 }
 </style>

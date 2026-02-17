@@ -71,7 +71,10 @@ async function updateStatus() {
 <template>
   <div class="sponsorship-page">
     <div class="page-header">
-      <h1>Gestion du parrainage <span class="count">({{ total }})</span></h1>
+      <div>
+        <h1>Gestion du parrainage</h1>
+        <p class="subtitle">{{ total }} bénéficiaire{{ total > 1 ? 's' : '' }}</p>
+      </div>
     </div>
 
     <!-- Filtres -->
@@ -88,7 +91,10 @@ async function updateStatus() {
     </div>
 
     <!-- Tableau -->
-    <div v-if="loading && !children.length" class="loading">Chargement...</div>
+    <div v-if="loading && !children.length" class="loading">
+      <div class="loading-spinner"></div>
+      <span>Chargement...</span>
+    </div>
     <div v-else-if="!children.length" class="empty">Aucun bénéficiaire trouvé</div>
 
     <div v-else class="table-wrapper">
@@ -161,33 +167,47 @@ async function updateStatus() {
 </template>
 
 <style scoped>
-.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-.page-header h1 { font-size: 1.5rem; margin: 0; }
-.count { color: #6b7280; font-weight: 400; }
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.75rem;
+}
+.page-header h1 { font-size: 1.6rem; font-weight: 800; color: var(--text); letter-spacing: -0.02em; margin: 0; }
+.subtitle { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.15rem; }
 
 .filters {
   display: flex;
   gap: 1rem;
   margin-bottom: 1.5rem;
-  background: white;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  background: var(--bg-card);
+  padding: 1.25rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
 
-.filter-group { display: flex; flex-direction: column; gap: 0.25rem; }
-.filter-label { font-size: 0.875rem; font-weight: 500; color: #374151; }
+.filter-group { display: flex; flex-direction: column; gap: 0.35rem; }
+.filter-label { font-size: 0.85rem; font-weight: 600; color: var(--text); }
 .filter-select {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   font-size: 0.875rem;
+  font-family: inherit;
+  color: var(--text);
+  background: white;
+  transition: border-color 0.2s;
+}
+.filter-select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
 .table-wrapper {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
   overflow-x: auto;
 }
 
@@ -198,38 +218,55 @@ async function updateStatus() {
 
 .data-table th {
   text-align: left;
-  padding: 0.75rem 1rem;
+  padding: 0.85rem 1.25rem;
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #6b7280;
-  border-bottom: 2px solid #e5e7eb;
+  color: var(--text-muted);
+  font-weight: 700;
+  border-bottom: 2px solid var(--border);
+  background: var(--bg);
 }
 
 .data-table td {
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid #f3f4f6;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--border);
   font-size: 0.875rem;
 }
 
-.data-table tbody tr:hover { background: #f9fafb; }
+.data-table tbody tr { transition: background 0.1s; }
+.data-table tbody tr:hover { background: var(--bg); }
 
-.ref-cell { font-family: monospace; font-size: 0.8rem; color: #6b7280; }
-.name-link { color: #1a56db; text-decoration: none; font-weight: 500; }
+.ref-cell { font-family: monospace; font-size: 0.8rem; color: var(--text-muted); }
+.name-link { color: var(--primary); text-decoration: none; font-weight: 600; }
 .name-link:hover { text-decoration: underline; }
 
-.badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 500; }
+.badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
 .badge-pending { background: #fef3c7; color: #92400e; }
 .badge-sponsored { background: #dcfce7; color: #166534; }
 .badge-not-eligible { background: #fee2e2; color: #991b1b; }
 
-.modal-field { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.25rem; }
+.modal-field { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.35rem; }
 
 .load-more { text-align: center; padding: 1.5rem 0; }
-.loading, .empty { text-align: center; padding: 3rem; color: #6b7280; }
+
+.loading {
+  text-align: center; padding: 3rem; color: var(--text-muted);
+  display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
+}
+.loading-spinner {
+  width: 32px; height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.empty { text-align: center; padding: 3rem; color: var(--text-muted); }
 
 @media (max-width: 768px) {
-  .data-table th, .data-table td { padding: 0.5rem; font-size: 0.8rem; }
+  .data-table th, .data-table td { padding: 0.6rem 0.75rem; font-size: 0.8rem; }
   .ref-cell { display: none; }
+  .page-header h1 { font-size: 1.3rem; }
 }
 </style>
