@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.store'
+import { useGoogleSignIn } from '@/composables/useGoogleSignIn'
 import AppButton from '@/components/common/AppButton.vue'
 import AppInput from '@/components/common/AppInput.vue'
 
@@ -12,6 +13,10 @@ const email = ref('')
 const password = ref('')
 const error = ref('')
 const loading = ref(false)
+const googleLoading = ref(false)
+const googleBtnRef = ref<HTMLElement | null>(null)
+
+const { tryInit } = useGoogleSignIn(handleGoogleToken)
 
 async function handleLogin() {
   error.value = ''
@@ -25,6 +30,25 @@ async function handleLogin() {
     loading.value = false
   }
 }
+
+async function handleGoogleToken(idToken: string) {
+  error.value = ''
+  googleLoading.value = true
+  try {
+    await authStore.loginWithGoogle(idToken)
+    router.push('/dashboard')
+  } catch (e: any) {
+    error.value = e.response?.data?.message || 'Erreur de connexion avec Google'
+  } finally {
+    googleLoading.value = false
+  }
+}
+
+onMounted(() => {
+  if (googleBtnRef.value) {
+    tryInit(googleBtnRef.value)
+  }
+})
 </script>
 
 <template>
@@ -40,6 +64,13 @@ async function handleLogin() {
       <div class="login-card">
         <h2>Connexion</h2>
         <p class="login-subtitle">Accédez à votre espace de gestion</p>
+
+        <div ref="googleBtnRef" class="google-btn-wrapper"></div>
+        <p v-if="googleLoading" class="google-loading">Connexion avec Google...</p>
+
+        <div class="separator">
+          <span>ou</span>
+        </div>
 
         <form @submit.prevent="handleLogin" class="login-form">
           <AppInput v-model="email" label="Email" type="email" placeholder="admin@anayi.bj" required />
@@ -97,6 +128,25 @@ async function handleLogin() {
 }
 .login-card h2 { font-size: 1.5rem; font-weight: 700; color: var(--text); margin-bottom: 0.25rem; }
 .login-subtitle { color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem; }
+
+.google-btn-wrapper { display: flex; justify-content: center; }
+.google-loading { text-align: center; color: var(--text-muted); font-size: 0.85rem; margin: 0.5rem 0 0; }
+
+.separator {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+.separator::before,
+.separator::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border, #e5e7eb);
+}
 
 .login-form { display: flex; flex-direction: column; gap: 1.25rem; }
 .error-message { color: var(--danger); font-size: 0.875rem; text-align: center; margin: 0; }

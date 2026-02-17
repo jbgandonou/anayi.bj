@@ -5,6 +5,10 @@ export const authService = {
     return api.post('/auth/login', { email, password })
   },
 
+  googleLogin(idToken: string) {
+    return api.post('/auth/google', { idToken })
+  },
+
   refresh() {
     return api.post('/auth/refresh')
   },

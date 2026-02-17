@@ -12,6 +12,7 @@ import {
 import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
+import { GoogleLoginDto } from './dto/google-login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
@@ -42,6 +43,21 @@ export class AuthController {
     };
   }
 
+  @Post('google')
+  @HttpCode(HttpStatus.OK)
+  async googleLogin(
+    @Body() googleLoginDto: GoogleLoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.googleLogin(googleLoginDto.idToken);
+    this.setRefreshCookie(res, result.refreshToken);
+
+    return {
+      accessToken: result.accessToken,
+      user: result.user,
+    };
+  }
+
   @Get('me')
   @UseGuards(JwtAuthGuard)
   me(@Req() req: Request) {
@@ -52,6 +68,7 @@ export class AuthController {
       lastName: user.lastName,
       email: user.email,
       role: user.role,
+      avatarUrl: user.avatarUrl,
     };
   }
 

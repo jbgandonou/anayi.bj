@@ -10,6 +10,7 @@ export interface User {
   lastName: string
   email: string
   role: 'ADMIN' | 'VOLUNTEER'
+  avatarUrl?: string | null
 }
 
 function loadUser(): User | null {
@@ -33,6 +34,18 @@ export const useAuthStore = defineStore('auth', () => {
     const response = await axios.post(
       `${API_URL}/auth/login`,
       { email, password },
+      { withCredentials: true },
+    )
+    accessToken.value = response.data.accessToken
+    user.value = response.data.user
+    localStorage.setItem('accessToken', response.data.accessToken)
+    localStorage.setItem('user', JSON.stringify(response.data.user))
+  }
+
+  async function loginWithGoogle(idToken: string) {
+    const response = await axios.post(
+      `${API_URL}/auth/google`,
+      { idToken },
       { withCredentials: true },
     )
     accessToken.value = response.data.accessToken
@@ -81,5 +94,5 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('user')
   }
 
-  return { accessToken, user, isAuthenticated, isAdmin, initialized, login, fetchMe, init, refresh, logout }
+  return { accessToken, user, isAuthenticated, isAdmin, initialized, login, loginWithGoogle, fetchMe, init, refresh, logout }
 })

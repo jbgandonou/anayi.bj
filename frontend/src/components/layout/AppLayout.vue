@@ -57,7 +57,8 @@ const navItems = [
 
       <div class="sidebar-footer">
         <div class="user-card">
-          <div class="user-avatar">{{ authStore.user?.firstName?.[0] }}{{ authStore.user?.lastName?.[0] }}</div>
+          <img v-if="authStore.user?.avatarUrl" :src="authStore.user.avatarUrl" class="user-avatar user-avatar-img" alt="Avatar" referrerpolicy="no-referrer" />
+          <div v-else class="user-avatar">{{ authStore.user?.firstName?.[0] }}{{ authStore.user?.lastName?.[0] }}</div>
           <div class="user-details">
             <span class="user-name">{{ authStore.user?.firstName }} {{ authStore.user?.lastName }}</span>
             <span class="user-role">{{ authStore.user?.role === 'ADMIN' ? 'Administrateur' : 'Volontaire' }}</span>
@@ -176,6 +177,9 @@ const navItems = [
   font-weight: 700;
   font-size: 0.75rem;
   flex-shrink: 0;
+}
+.user-avatar-img {
+  object-fit: cover;
 }
 .user-details { display: flex; flex-direction: column; min-width: 0; }
 .user-name { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
