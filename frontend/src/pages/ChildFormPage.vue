@@ -410,4 +410,11 @@ async function confirmCreate() {
 }
 
 .duplicate-list li { margin-bottom: 0.25rem; }
+
+@media (max-width: 768px) {
+  .stepper { gap: 0.35rem; }
+  .step-label { display: none; }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-card { padding: 1rem; }
+}
 </style>

@@ -227,4 +227,9 @@ async function updateStatus() {
 
 .load-more { text-align: center; padding: 1.5rem 0; }
 .loading, .empty { text-align: center; padding: 3rem; color: #6b7280; }
+
+@media (max-width: 768px) {
+  .data-table th, .data-table td { padding: 0.5rem; font-size: 0.8rem; }
+  .ref-cell { display: none; }
+}
 </style>

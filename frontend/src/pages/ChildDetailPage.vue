@@ -190,4 +190,10 @@ function downloadUrl(docId: string) {
 
 .survey-item { padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6; }
 .loading { text-align: center; padding: 3rem; color: #6b7280; }
+
+@media (max-width: 768px) {
+  .page-header { flex-direction: column; gap: 0.75rem; }
+  .info-grid { grid-template-columns: 1fr; }
+  .page-header h1 { font-size: 1.25rem; }
+}
 </style>

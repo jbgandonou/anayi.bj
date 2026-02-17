@@ -229,4 +229,15 @@ function statusClass(status: string) {
 
 .load-more { text-align: center; padding: 1.5rem 0; }
 .loading, .empty { text-align: center; padding: 3rem; color: #6b7280; }
+
+@media (max-width: 768px) {
+  .page-header { flex-direction: column; align-items: stretch; gap: 0.75rem; }
+  .filters { grid-template-columns: 1fr 1fr; }
+  .children-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .filters { grid-template-columns: 1fr; }
+  .page-header h1 { font-size: 1.25rem; }
+}
 </style>

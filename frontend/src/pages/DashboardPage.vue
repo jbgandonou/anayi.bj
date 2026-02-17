@@ -196,4 +196,18 @@ function statusClass(status: string) {
 .village-count { font-size: 0.875rem; font-weight: 600; color: #374151; min-width: 30px; text-align: right; }
 
 .loading, .empty { text-align: center; padding: 2rem; color: #6b7280; }
+
+@media (max-width: 768px) {
+  .stat-cards { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+  .stat-value { font-size: 1.35rem; }
+  .stat-card { padding: 1rem; }
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .recent-item { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+  .recent-meta { margin-top: 0.15rem; }
+}
+
+@media (max-width: 480px) {
+  .stat-cards { grid-template-columns: repeat(2, 1fr); }
+  .dashboard-page h1 { font-size: 1.25rem; }
+}
 </style>
