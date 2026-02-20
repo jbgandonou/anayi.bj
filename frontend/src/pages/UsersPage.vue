@@ -4,6 +4,7 @@ import { usersService, type CreateUserPayload } from '@/services/users.service'
 import AppButton from '@/components/common/AppButton.vue'
 import AppInput from '@/components/common/AppInput.vue'
 import AppModal from '@/components/common/AppModal.vue'
+import { UsersRound, UserPlus, ShieldCheck, ShieldOff } from 'lucide-vue-next'
 
 interface User {
   id: string
@@ -67,11 +68,19 @@ onMounted(loadUsers)
 <template>
   <div class="users-page">
     <div class="page-header">
-      <div>
-        <h1>Gestion des utilisateurs</h1>
-        <p class="subtitle">{{ users.length }} utilisateur{{ users.length > 1 ? 's' : '' }}</p>
+      <div class="page-title-group">
+        <div class="page-icon">
+          <UsersRound :size="22" :stroke-width="1.8" />
+        </div>
+        <div>
+          <h1>Gestion des utilisateurs</h1>
+          <p class="subtitle">{{ users.length }} utilisateur{{ users.length > 1 ? 's' : '' }}</p>
+        </div>
       </div>
-      <AppButton @click="showCreateModal = true">+ Créer un utilisateur</AppButton>
+      <AppButton @click="showCreateModal = true">
+        <template #icon><UserPlus :size="16" :stroke-width="2" /></template>
+        Créer un utilisateur
+      </AppButton>
     </div>
 
     <div v-if="loading" class="loading">
@@ -98,11 +107,13 @@ onMounted(loadUsers)
             <td>{{ user.phone || '-' }}</td>
             <td>
               <span class="badge" :class="user.role === 'ADMIN' ? 'badge-admin' : 'badge-volunteer'">
+                <span class="badge-dot" :class="user.role === 'ADMIN' ? 'dot-admin' : 'dot-volunteer'"></span>
                 {{ user.role === 'ADMIN' ? 'Admin' : 'Volontaire' }}
               </span>
             </td>
             <td>
               <span class="badge" :class="user.isActive ? 'badge-active' : 'badge-inactive'">
+                <span class="badge-dot" :class="user.isActive ? 'dot-active' : 'dot-inactive'"></span>
                 {{ user.isActive ? 'Actif' : 'Inactif' }}
               </span>
             </td>
@@ -112,6 +123,10 @@ onMounted(loadUsers)
                 size="sm"
                 @click="toggleActive(user)"
               >
+                <template #icon>
+                  <ShieldOff v-if="user.isActive" :size="13" :stroke-width="2" />
+                  <ShieldCheck v-else :size="13" :stroke-width="2" />
+                </template>
                 {{ user.isActive ? 'Désactiver' : 'Activer' }}
               </AppButton>
             </td>
@@ -154,6 +169,22 @@ onMounted(loadUsers)
   align-items: center;
   margin-bottom: 1.75rem;
 }
+.page-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+.page-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius);
+  background: var(--primary-50);
+  color: var(--primary-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
 .page-header h1 { font-size: 1.6rem; font-weight: 800; color: var(--text); letter-spacing: -0.02em; margin: 0; }
 .subtitle { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.15rem; }
 
@@ -162,6 +193,7 @@ onMounted(loadUsers)
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   overflow-x: auto;
+  border: 1px solid var(--border-light);
 }
 
 .users-table {
@@ -183,12 +215,12 @@ onMounted(loadUsers)
 
 .users-table td {
   padding: 0.85rem 1.25rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-light);
   font-size: 0.875rem;
 }
 
-.users-table tbody tr { transition: background 0.1s; }
-.users-table tbody tr:hover { background: var(--bg); }
+.users-table tbody tr { transition: background var(--transition); }
+.users-table tbody tr:hover { background: var(--primary-50); }
 
 .name-cell { font-weight: 600; color: var(--text); }
 
@@ -197,13 +229,24 @@ onMounted(loadUsers)
   border-radius: 20px;
   font-size: 0.7rem;
   font-weight: 600;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
 }
 
 .badge-admin { background: #dbeafe; color: #1e40af; }
+.dot-admin { background: #3b82f6; }
 .badge-volunteer { background: #f3e8ff; color: #7c3aed; }
+.dot-volunteer { background: #8b5cf6; }
 .badge-active { background: #dcfce7; color: #166534; }
+.dot-active { background: #10b981; }
 .badge-inactive { background: #fee2e2; color: #991b1b; }
+.dot-inactive { background: #ef4444; }
 
 .create-form {
   display: flex;
@@ -222,11 +265,12 @@ onMounted(loadUsers)
   font-family: inherit;
   color: var(--text);
   background: white;
+  transition: all var(--transition);
 }
 .form-select:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.08);
 }
 
 .error-text {

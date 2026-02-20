@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { childrenService } from '@/services/children.service'
 import AppButton from '@/components/common/AppButton.vue'
 import type { Child } from '@/types/child'
+import { User, GraduationCap, Heart, Home, Handshake, FileText, ClipboardList, Paperclip, Pencil, ArrowLeft } from 'lucide-vue-next'
 
 const route = useRoute()
 const router = useRouter()
@@ -59,16 +60,25 @@ function downloadUrl(docId: string) {
         </div>
         <div class="header-actions">
           <router-link :to="`/children/${child.id}/edit`">
-            <AppButton variant="secondary">Modifier</AppButton>
+            <AppButton variant="secondary">
+              <template #icon><Pencil :size="15" :stroke-width="2" /></template>
+              Modifier
+            </AppButton>
           </router-link>
-          <AppButton variant="secondary" @click="router.back()">Retour</AppButton>
+          <AppButton variant="secondary" @click="router.back()">
+            <template #icon><ArrowLeft :size="15" :stroke-width="2" /></template>
+            Retour
+          </AppButton>
         </div>
       </div>
 
       <div class="sections">
         <!-- Identité -->
         <section class="card">
-          <h2>Identité</h2>
+          <div class="card-header">
+            <div class="section-icon"><User :size="18" :stroke-width="1.8" /></div>
+            <h2>Identité</h2>
+          </div>
           <div class="info-grid">
             <div class="info-item"><span class="label">Sexe</span><span class="value">{{ child.gender === 'MALE' ? 'Masculin' : 'Féminin' }}</span></div>
             <div class="info-item"><span class="label">Date de naissance</span><span class="value">{{ child.dateOfBirth ? new Date(child.dateOfBirth).toLocaleDateString('fr-FR') : '-' }}</span></div>
@@ -83,7 +93,10 @@ function downloadUrl(docId: string) {
 
         <!-- Scolarité -->
         <section class="card">
-          <h2>Scolarité</h2>
+          <div class="card-header">
+            <div class="section-icon si-amber"><GraduationCap :size="18" :stroke-width="1.8" /></div>
+            <h2>Scolarité</h2>
+          </div>
           <div class="info-grid">
             <div class="info-item"><span class="label">École</span><span class="value">{{ child.school || '-' }}</span></div>
             <div class="info-item"><span class="label">Classe</span><span class="value">{{ child.currentGrade || '-' }}</span></div>
@@ -94,7 +107,10 @@ function downloadUrl(docId: string) {
 
         <!-- Santé -->
         <section class="card">
-          <h2>Santé</h2>
+          <div class="card-header">
+            <div class="section-icon si-rose"><Heart :size="18" :stroke-width="1.8" /></div>
+            <h2>Santé</h2>
+          </div>
           <div class="info-grid">
             <div class="info-item"><span class="label">État général</span><span class="value">{{ child.generalHealth || '-' }}</span></div>
             <div class="info-item"><span class="label">Vaccinations à jour</span><span class="value">{{ child.vaccinationsUpToDate ? 'Oui' : 'Non' }}</span></div>
@@ -104,7 +120,10 @@ function downloadUrl(docId: string) {
 
         <!-- Conditions de vie -->
         <section class="card">
-          <h2>Conditions de vie</h2>
+          <div class="card-header">
+            <div class="section-icon si-emerald"><Home :size="18" :stroke-width="1.8" /></div>
+            <h2>Conditions de vie</h2>
+          </div>
           <div class="info-grid">
             <div class="info-item"><span class="label">Logement</span><span class="value">{{ child.housingType || '-' }}</span></div>
             <div class="info-item"><span class="label">Eau potable</span><span class="value">{{ child.accessToWater ? 'Oui' : 'Non' }}</span></div>
@@ -116,7 +135,10 @@ function downloadUrl(docId: string) {
 
         <!-- Parrainage -->
         <section class="card">
-          <h2>Parrainage</h2>
+          <div class="card-header">
+            <div class="section-icon si-violet"><Handshake :size="18" :stroke-width="1.8" /></div>
+            <h2>Parrainage</h2>
+          </div>
           <div class="info-grid">
             <div class="info-item"><span class="label">Souhaite le parrainage</span><span class="value">{{ child.wantsSponsorship ? 'Oui' : 'Non' }}</span></div>
             <div class="info-item"><span class="label">Consentement</span><span class="value">{{ child.guardianConsent ? 'Oui' : 'Non' }}</span></div>
@@ -130,7 +152,10 @@ function downloadUrl(docId: string) {
 
         <!-- Documents -->
         <section v-if="child.documents?.length" class="card">
-          <h2>Documents</h2>
+          <div class="card-header">
+            <div class="section-icon si-blue"><FileText :size="18" :stroke-width="1.8" /></div>
+            <h2>Documents</h2>
+          </div>
           <div class="docs-list">
             <a
               v-for="doc in child.documents"
@@ -139,7 +164,9 @@ function downloadUrl(docId: string) {
               target="_blank"
               class="doc-item"
             >
-              <span class="doc-icon">📎</span>
+              <div class="doc-icon-wrapper">
+                <Paperclip :size="16" :stroke-width="2" />
+              </div>
               <div class="doc-info">
                 <span class="doc-type">{{ docTypeLabel(doc.type) }}</span>
                 <span class="doc-name">{{ doc.fileName }}</span>
@@ -150,7 +177,10 @@ function downloadUrl(docId: string) {
 
         <!-- Enquêtes -->
         <section v-if="child.surveys?.length" class="card">
-          <h2>Enquêtes</h2>
+          <div class="card-header">
+            <div class="section-icon"><ClipboardList :size="18" :stroke-width="1.8" /></div>
+            <h2>Enquêtes</h2>
+          </div>
           <div v-for="s in child.surveys" :key="s.id" class="survey-item">
             <strong>{{ s.volunteerName }}</strong> — {{ s.volunteerPhone }}
             <br />
@@ -173,7 +203,7 @@ function downloadUrl(docId: string) {
 .child-avatar {
   width: 52px; height: 52px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary), #818cf8);
+  background: linear-gradient(135deg, var(--primary), var(--primary-400));
   color: white;
   display: flex; align-items: center; justify-content: center;
   font-weight: 700; font-size: 1.1rem;
@@ -190,12 +220,35 @@ function downloadUrl(docId: string) {
   padding: 1.5rem;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  border: 1px solid var(--border-light);
 }
-.card h2 {
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 1.15rem;
+}
+.section-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--primary-50);
+  color: var(--primary-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.si-amber { background: #fef3c7; color: #b45309; }
+.si-rose { background: #ffe4e6; color: #e11d48; }
+.si-emerald { background: #d1fae5; color: #047857; }
+.si-violet { background: #ede9fe; color: #7c3aed; }
+.si-blue { background: #dbeafe; color: #2563eb; }
+.card-header h2 {
   font-size: 0.95rem;
   font-weight: 700;
-  color: var(--primary);
-  margin: 0 0 1rem;
+  color: var(--text);
+  margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -219,15 +272,29 @@ function downloadUrl(docId: string) {
   display: flex; align-items: center; gap: 0.75rem;
   padding: 0.75rem; background: var(--bg);
   border-radius: var(--radius-sm); text-decoration: none; color: inherit;
-  transition: background 0.15s;
+  transition: all var(--transition);
+  border: 1px solid transparent;
 }
-.doc-item:hover { background: var(--border); }
-.doc-icon { font-size: 1.2rem; }
+.doc-item:hover {
+  background: var(--primary-50);
+  border-color: var(--primary-200);
+}
+.doc-icon-wrapper {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--primary-100);
+  color: var(--primary-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
 .doc-info { display: flex; flex-direction: column; }
 .doc-type { font-weight: 600; font-size: 0.85rem; color: var(--text); }
 .doc-name { color: var(--text-muted); font-size: 0.8rem; }
 
-.survey-item { padding: 0.65rem 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+.survey-item { padding: 0.65rem 0; border-bottom: 1px solid var(--border-light); font-size: 0.9rem; }
 .survey-item:last-child { border-bottom: none; }
 
 .loading {

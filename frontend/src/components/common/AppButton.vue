@@ -14,6 +14,7 @@ defineProps<{
     :disabled="disabled || loading"
   >
     <span v-if="loading" class="spinner"></span>
+    <slot name="icon" />
     <slot />
   </button>
 </template>
@@ -22,14 +23,16 @@ defineProps<{
 .app-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   border: none;
   border-radius: var(--radius-sm);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--transition);
   font-family: inherit;
   letter-spacing: -0.01em;
+  position: relative;
 }
 
 .app-btn:disabled {
@@ -44,12 +47,16 @@ defineProps<{
 .btn-primary {
   background: var(--primary);
   color: white;
-  box-shadow: 0 1px 2px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 1px 2px rgba(79, 70, 229, 0.3), 0 0 0 0 rgba(79, 70, 229, 0);
 }
 .btn-primary:hover:not(:disabled) {
-  background: var(--primary-dark);
-  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.35);
+  background: var(--primary-hover);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3), 0 0 0 0 rgba(79, 70, 229, 0);
   transform: translateY(-1px);
+}
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(79, 70, 229, 0.3);
 }
 
 .btn-secondary {
@@ -58,8 +65,9 @@ defineProps<{
   border: 1px solid var(--border);
 }
 .btn-secondary:hover:not(:disabled) {
-  background: var(--bg);
-  border-color: var(--text-muted);
+  background: var(--primary-50);
+  border-color: var(--primary-200);
+  color: var(--primary-700);
 }
 
 .btn-danger {
@@ -69,7 +77,7 @@ defineProps<{
 }
 .btn-danger:hover:not(:disabled) {
   background: #dc2626;
-  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.35);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
   transform: translateY(-1px);
 }
 
@@ -80,6 +88,11 @@ defineProps<{
   border-top-color: white;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
+}
+
+.btn-secondary .spinner {
+  border-color: rgba(0, 0, 0, 0.1);
+  border-top-color: var(--primary);
 }
 
 @keyframes spin {

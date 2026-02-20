@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { X } from 'lucide-vue-next'
+
 defineProps<{
   title: string
 }>()
@@ -14,7 +16,9 @@ defineEmits<{
       <div class="modal">
         <div class="modal-header">
           <h2 class="modal-title">{{ title }}</h2>
-          <button class="modal-close" @click="$emit('close')">&times;</button>
+          <button class="modal-close" @click="$emit('close')">
+            <X :size="18" :stroke-width="2" />
+          </button>
         </div>
         <div class="modal-body">
           <slot />
@@ -31,13 +35,13 @@ defineEmits<{
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(4px);
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  animation: fadeIn 0.15s ease;
+  animation: fadeIn 0.2s ease;
 }
 
 @keyframes fadeIn {
@@ -47,18 +51,19 @@ defineEmits<{
 
 .modal {
   background: var(--bg-card);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   width: 90%;
   max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: var(--shadow-lg);
-  animation: slideUp 0.2s ease;
+  box-shadow: var(--shadow-xl);
+  animation: slideUp 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--border-light);
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .modal-header {
@@ -79,16 +84,15 @@ defineEmits<{
 .modal-close {
   background: none;
   border: none;
-  font-size: 1.5rem;
   cursor: pointer;
   color: var(--text-muted);
-  transition: color 0.15s;
+  transition: all var(--transition);
   width: 32px;
   height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  border-radius: var(--radius-sm);
 }
 .modal-close:hover {
   color: var(--text);

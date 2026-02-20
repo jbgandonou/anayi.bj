@@ -1,13 +1,18 @@
 <script setup lang="ts">
-defineProps<{
+import { computed } from 'vue'
+
+const props = defineProps<{
   label: string
   type?: string
   placeholder?: string
   error?: string
   required?: boolean
+  icon?: object
 }>()
 
 const model = defineModel<string | number>()
+
+const hasIcon = computed(() => !!props.icon)
 </script>
 
 <template>
@@ -16,13 +21,16 @@ const model = defineModel<string | number>()
       {{ label }}
       <span v-if="required" class="required">*</span>
     </label>
-    <input
-      v-model="model"
-      :type="type ?? 'text'"
-      :placeholder="placeholder"
-      class="form-input"
-      :class="{ 'input-error': error }"
-    />
+    <div class="input-wrapper" :class="{ 'has-icon': hasIcon }">
+      <component v-if="icon" :is="icon" class="input-icon" :size="16" :stroke-width="2" />
+      <input
+        v-model="model"
+        :type="type ?? 'text'"
+        :placeholder="placeholder"
+        class="form-input"
+        :class="{ 'input-error': error, 'with-icon': hasIcon }"
+      />
+    </div>
     <span v-if="error" class="error-text">{{ error }}</span>
   </div>
 </template>
@@ -44,7 +52,26 @@ const model = defineModel<string | number>()
   color: var(--danger);
 }
 
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 0.75rem;
+  color: var(--text-muted);
+  pointer-events: none;
+  transition: color var(--transition);
+}
+
+.input-wrapper:focus-within .input-icon {
+  color: var(--primary);
+}
+
 .form-input {
+  width: 100%;
   padding: 0.55rem 0.85rem;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
@@ -52,7 +79,11 @@ const model = defineModel<string | number>()
   font-family: inherit;
   color: var(--text);
   background: white;
-  transition: all 0.2s;
+  transition: all var(--transition);
+}
+
+.form-input.with-icon {
+  padding-left: 2.35rem;
 }
 
 .form-input::placeholder {
@@ -62,11 +93,15 @@ const model = defineModel<string | number>()
 .form-input:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.08);
 }
 
 .input-error {
   border-color: var(--danger);
+}
+
+.input-error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
 }
 
 .error-text {

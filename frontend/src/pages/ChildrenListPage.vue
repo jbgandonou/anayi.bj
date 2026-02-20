@@ -4,6 +4,7 @@ import { childrenService } from '@/services/children.service'
 import AppButton from '@/components/common/AppButton.vue'
 import AppInput from '@/components/common/AppInput.vue'
 import type { ChildListItem } from '@/types/child'
+import { Users, Plus, Search, MapPin, Filter, UserX } from 'lucide-vue-next'
 
 const children = ref<ChildListItem[]>([])
 const loading = ref(false)
@@ -72,12 +73,20 @@ function statusClass(status: string) {
 <template>
   <div class="children-list-page">
     <div class="page-header">
-      <div>
-        <h1>Bénéficiaires</h1>
-        <p class="subtitle">{{ total }} enfant{{ total > 1 ? 's' : '' }} enregistré{{ total > 1 ? 's' : '' }}</p>
+      <div class="page-title-group">
+        <div class="page-icon">
+          <Users :size="22" :stroke-width="1.8" />
+        </div>
+        <div>
+          <h1>Bénéficiaires</h1>
+          <p class="subtitle">{{ total }} enfant{{ total > 1 ? 's' : '' }} enregistré{{ total > 1 ? 's' : '' }}</p>
+        </div>
       </div>
       <router-link to="/children/new">
-        <AppButton>+ Enregistrer un enfant</AppButton>
+        <AppButton>
+          <template #icon><Plus :size="16" :stroke-width="2.5" /></template>
+          Enregistrer un enfant
+        </AppButton>
       </router-link>
     </div>
 
@@ -87,14 +96,21 @@ function statusClass(status: string) {
         v-model="search"
         label="Rechercher"
         placeholder="Nom ou prénom..."
+        :icon="Search"
         @input="onSearchChange"
       />
       <div class="form-group">
         <label class="form-label">Village</label>
-        <input v-model="village" class="form-input" placeholder="Filtrer par village" />
+        <div class="input-with-icon">
+          <MapPin :size="15" class="field-icon" />
+          <input v-model="village" class="form-input with-icon" placeholder="Filtrer par village" />
+        </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Statut parrainage</label>
+        <label class="form-label">
+          <Filter :size="13" :stroke-width="2" class="label-icon" />
+          Statut parrainage
+        </label>
         <select v-model="sponsorshipStatus" class="form-select">
           <option value="">Tous</option>
           <option value="PENDING">En attente</option>
@@ -118,7 +134,13 @@ function statusClass(status: string) {
       <span>Chargement...</span>
     </div>
 
-    <div v-else-if="!children.length" class="empty">Aucun bénéficiaire trouvé</div>
+    <div v-else-if="!children.length" class="empty">
+      <div class="empty-icon-wrapper">
+        <UserX :size="40" :stroke-width="1.2" />
+      </div>
+      <h3>Aucun bénéficiaire trouvé</h3>
+      <p>Essayez de modifier vos filtres de recherche</p>
+    </div>
 
     <div v-else class="children-grid">
       <router-link
@@ -133,7 +155,10 @@ function statusClass(status: string) {
         </div>
         <div class="card-info">
           <h3>{{ child.firstName }} {{ child.lastName }}</h3>
-          <p class="card-detail">{{ child.village }}</p>
+          <p class="card-detail">
+            <MapPin :size="12" :stroke-width="2" class="detail-icon" />
+            {{ child.village }}
+          </p>
           <p v-if="child.school" class="card-detail">{{ child.school }}</p>
           <span class="badge" :class="statusClass(child.sponsorshipStatus)">
             {{ statusLabel(child.sponsorshipStatus) }}
@@ -158,6 +183,22 @@ function statusClass(status: string) {
   align-items: center;
   margin-bottom: 1.75rem;
 }
+.page-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+.page-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius);
+  background: var(--primary-50);
+  color: var(--primary-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
 .page-header h1 { font-size: 1.6rem; font-weight: 800; color: var(--text); letter-spacing: -0.02em; margin: 0; }
 .subtitle { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.15rem; }
 
@@ -170,9 +211,29 @@ function statusClass(status: string) {
   padding: 1.25rem;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  border: 1px solid var(--border-light);
 }
 .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
-.form-label { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+.form-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.label-icon { color: var(--text-muted); }
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.field-icon {
+  position: absolute;
+  left: 0.75rem;
+  color: var(--text-muted);
+  pointer-events: none;
+}
 .form-input, .form-select {
   padding: 0.55rem 0.85rem;
   border: 1px solid var(--border);
@@ -181,12 +242,16 @@ function statusClass(status: string) {
   font-family: inherit;
   color: var(--text);
   background: white;
-  transition: border-color 0.2s;
+  transition: all var(--transition);
+  width: 100%;
+}
+.form-input.with-icon {
+  padding-left: 2.25rem;
 }
 .form-input:focus, .form-select:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.08);
 }
 
 .children-grid {
@@ -204,11 +269,13 @@ function statusClass(status: string) {
   text-decoration: none;
   color: inherit;
   box-shadow: var(--shadow);
-  transition: all 0.2s;
+  transition: all var(--transition);
+  border: 1px solid var(--border-light);
 }
 .child-card:hover {
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
+  border-color: var(--primary-200);
 }
 
 .card-photo {
@@ -221,7 +288,7 @@ function statusClass(status: string) {
 .card-photo img { width: 100%; height: 100%; object-fit: cover; }
 .photo-placeholder {
   width: 100%; height: 100%;
-  background: linear-gradient(135deg, var(--primary), #818cf8);
+  background: linear-gradient(135deg, var(--primary), var(--primary-400));
   color: white;
   display: flex;
   align-items: center;
@@ -231,7 +298,15 @@ function statusClass(status: string) {
 }
 
 .card-info h3 { font-size: 0.95rem; font-weight: 700; margin: 0 0 0.2rem; color: var(--text); }
-.card-detail { font-size: 0.8rem; color: var(--text-muted); margin: 0; }
+.card-detail {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.detail-icon { flex-shrink: 0; }
 
 .badge {
   display: inline-block;
@@ -259,7 +334,24 @@ function statusClass(status: string) {
   animation: spin 0.7s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-.empty { text-align: center; padding: 3rem; color: var(--text-muted); }
+
+.empty {
+  text-align: center;
+  padding: 3rem;
+}
+.empty-icon-wrapper {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--primary-50);
+  color: var(--primary-300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+.empty h3 { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 0.25rem; }
+.empty p { font-size: 0.85rem; color: var(--text-muted); }
 
 @media (max-width: 768px) {
   .page-header { flex-direction: column; align-items: stretch; gap: 0.75rem; }

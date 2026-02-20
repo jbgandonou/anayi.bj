@@ -7,6 +7,7 @@ import AppButton from '@/components/common/AppButton.vue'
 import AppInput from '@/components/common/AppInput.vue'
 import AppModal from '@/components/common/AppModal.vue'
 import type { DuplicateWarning } from '@/types/child'
+import { Check, User, GraduationCap, Heart, Home, Handshake, FileText, Upload, ChevronLeft, ChevronRight } from 'lucide-vue-next'
 
 const router = useRouter()
 
@@ -54,6 +55,7 @@ const totalSteps = 6
 const duplicateWarning = ref<DuplicateWarning | null>(null)
 
 const stepTitles = ['Identité', 'Scolarité', 'Santé', 'Conditions de vie', 'Parrainage', 'Documents & Enquête']
+const stepIcons = [User, GraduationCap, Heart, Home, Handshake, FileText]
 
 const canGoNext = computed(() => {
   if (step.value === 1) {
@@ -128,22 +130,29 @@ async function confirmCreate() {
 
     <!-- Stepper -->
     <div class="stepper">
-      <div
-        v-for="i in totalSteps"
-        :key="i"
-        class="step-item"
-        :class="{ active: step === i, completed: step > i }"
-        @click="step = i"
-      >
-        <span class="step-number">{{ step > i ? '✓' : i }}</span>
-        <span class="step-label">{{ stepTitles[i - 1] }}</span>
-      </div>
+      <template v-for="i in totalSteps" :key="i">
+        <div
+          class="step-item"
+          :class="{ active: step === i, completed: step > i }"
+          @click="step = i"
+        >
+          <span class="step-number">
+            <Check v-if="step > i" :size="14" :stroke-width="3" />
+            <component v-else :is="stepIcons[i - 1]" :size="14" :stroke-width="2" />
+          </span>
+          <span class="step-label">{{ stepTitles[i - 1] }}</span>
+        </div>
+        <div v-if="i < totalSteps" class="step-connector" :class="{ filled: step > i }"></div>
+      </template>
     </div>
 
     <form @submit.prevent="submit()" class="form-card">
       <!-- Étape 1 : Identité -->
       <div v-show="step === 1" class="form-step">
-        <h2>Identité de l'enfant</h2>
+        <div class="step-header">
+          <div class="step-header-icon"><User :size="20" :stroke-width="1.8" /></div>
+          <h2>Identité de l'enfant</h2>
+        </div>
         <div class="form-grid">
           <AppInput v-model="form.lastName" label="Nom" required />
           <AppInput v-model="form.firstName" label="Prénom(s)" required />
@@ -166,7 +175,10 @@ async function confirmCreate() {
 
       <!-- Étape 2 : Scolarité -->
       <div v-show="step === 2" class="form-step">
-        <h2>Situation scolaire</h2>
+        <div class="step-header">
+          <div class="step-header-icon shi-amber"><GraduationCap :size="20" :stroke-width="1.8" /></div>
+          <h2>Situation scolaire</h2>
+        </div>
         <div class="form-grid">
           <AppInput v-model="form.school" label="École fréquentée" />
           <AppInput v-model="form.currentGrade" label="Niveau / Classe actuelle" />
@@ -180,7 +192,10 @@ async function confirmCreate() {
 
       <!-- Étape 3 : Santé -->
       <div v-show="step === 3" class="form-step">
-        <h2>Situation sanitaire</h2>
+        <div class="step-header">
+          <div class="step-header-icon shi-rose"><Heart :size="20" :stroke-width="1.8" /></div>
+          <h2>Situation sanitaire</h2>
+        </div>
         <div class="form-grid">
           <AppInput v-model="form.generalHealth" label="État de santé général" />
           <div class="form-group">
@@ -199,7 +214,10 @@ async function confirmCreate() {
 
       <!-- Étape 4 : Conditions de vie -->
       <div v-show="step === 4" class="form-step">
-        <h2>Conditions de vie</h2>
+        <div class="step-header">
+          <div class="step-header-icon shi-emerald"><Home :size="20" :stroke-width="1.8" /></div>
+          <h2>Conditions de vie</h2>
+        </div>
         <div class="form-grid">
           <AppInput v-model="form.housingType" label="Type de logement" />
           <div class="form-group">
@@ -229,7 +247,10 @@ async function confirmCreate() {
 
       <!-- Étape 5 : Parrainage -->
       <div v-show="step === 5" class="form-step">
-        <h2>Parrainage</h2>
+        <div class="step-header">
+          <div class="step-header-icon shi-violet"><Handshake :size="20" :stroke-width="1.8" /></div>
+          <h2>Parrainage</h2>
+        </div>
         <div class="form-grid">
           <div class="form-group">
             <label class="form-label">Souhaite être inscrit(e) au programme ?</label>
@@ -254,19 +275,37 @@ async function confirmCreate() {
 
       <!-- Étape 6 : Documents & Enquête -->
       <div v-show="step === 6" class="form-step">
-        <h2>Documents et informations de l'enquête</h2>
+        <div class="step-header">
+          <div class="step-header-icon shi-blue"><FileText :size="20" :stroke-width="1.8" /></div>
+          <h2>Documents et informations de l'enquête</h2>
+        </div>
         <div class="form-grid">
           <div class="form-group">
             <label class="form-label">Photo récente de l'enfant</label>
-            <input type="file" accept="image/*" @change="onFileChange('photo', $event)" class="form-file" />
+            <div class="file-drop-zone" @click="($refs.photoInput as HTMLInputElement)?.click()">
+              <Upload :size="24" :stroke-width="1.5" class="upload-icon" />
+              <span class="file-label">{{ photo ? photo.name : 'Choisir un fichier' }}</span>
+              <span class="file-hint">Image uniquement</span>
+              <input ref="photoInput" type="file" accept="image/*" @change="onFileChange('photo', $event)" class="file-hidden" />
+            </div>
           </div>
           <div class="form-group">
             <label class="form-label">Acte de naissance</label>
-            <input type="file" accept="image/*,.pdf" @change="onFileChange('birthCertificate', $event)" class="form-file" />
+            <div class="file-drop-zone" @click="($refs.birthInput as HTMLInputElement)?.click()">
+              <Upload :size="24" :stroke-width="1.5" class="upload-icon" />
+              <span class="file-label">{{ birthCertificate ? birthCertificate.name : 'Choisir un fichier' }}</span>
+              <span class="file-hint">Image ou PDF</span>
+              <input ref="birthInput" type="file" accept="image/*,.pdf" @change="onFileChange('birthCertificate', $event)" class="file-hidden" />
+            </div>
           </div>
           <div class="form-group">
             <label class="form-label">Certificat de scolarité</label>
-            <input type="file" accept="image/*,.pdf" @change="onFileChange('schoolCertificate', $event)" class="form-file" />
+            <div class="file-drop-zone" @click="($refs.schoolInput as HTMLInputElement)?.click()">
+              <Upload :size="24" :stroke-width="1.5" class="upload-icon" />
+              <span class="file-label">{{ schoolCertificate ? schoolCertificate.name : 'Choisir un fichier' }}</span>
+              <span class="file-hint">Image ou PDF</span>
+              <input ref="schoolInput" type="file" accept="image/*,.pdf" @change="onFileChange('schoolCertificate', $event)" class="file-hidden" />
+            </div>
           </div>
           <AppInput v-model="form.volunteerName" label="Nom du volontaire" required />
           <AppInput v-model="form.volunteerPhone" label="Contact (Téléphone/WhatsApp)" required />
@@ -279,13 +318,16 @@ async function confirmCreate() {
 
       <div class="form-actions">
         <AppButton v-if="step > 1" variant="secondary" type="button" @click="prevStep">
+          <template #icon><ChevronLeft :size="16" :stroke-width="2" /></template>
           Précédent
         </AppButton>
         <div class="spacer"></div>
         <AppButton v-if="step < totalSteps" type="button" :disabled="!canGoNext" @click="nextStep">
           Suivant
+          <ChevronRight :size="16" :stroke-width="2" />
         </AppButton>
         <AppButton v-if="step === totalSteps" :loading="loading" type="submit">
+          <template #icon><Check :size="16" :stroke-width="2.5" /></template>
           Enregistrer
         </AppButton>
       </div>
@@ -315,10 +357,21 @@ async function confirmCreate() {
 
 .stepper {
   display: flex;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 0;
   margin-bottom: 1.5rem;
   overflow-x: auto;
   padding-bottom: 0.25rem;
+}
+
+.step-connector {
+  flex: 0 0 20px;
+  height: 2px;
+  background: var(--border);
+  transition: background var(--transition);
+}
+.step-connector.filled {
+  background: var(--success);
 }
 
 .step-item {
@@ -333,7 +386,7 @@ async function confirmCreate() {
   color: var(--text-muted);
   white-space: nowrap;
   border: 1px solid var(--border);
-  transition: all 0.2s;
+  transition: all var(--transition);
   font-weight: 500;
 }
 
@@ -342,12 +395,12 @@ async function confirmCreate() {
   color: white;
   border-color: var(--primary);
   font-weight: 600;
-  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
 }
 .step-item.completed {
-  background: #dcfce7;
-  color: #166534;
-  border-color: #bbf7d0;
+  background: var(--success-light);
+  color: #047857;
+  border-color: #a7f3d0;
 }
 
 .step-number {
@@ -367,13 +420,37 @@ async function confirmCreate() {
   padding: 1.75rem;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  border: 1px solid var(--border-light);
 }
+
+.step-header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 1.25rem;
+}
+.step-header-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--primary-50);
+  color: var(--primary-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.shi-amber { background: #fef3c7; color: #b45309; }
+.shi-rose { background: #ffe4e6; color: #e11d48; }
+.shi-emerald { background: #d1fae5; color: #047857; }
+.shi-violet { background: #ede9fe; color: #7c3aed; }
+.shi-blue { background: #dbeafe; color: #2563eb; }
 
 .form-step h2 {
   font-size: 1.1rem;
   font-weight: 700;
-  margin-bottom: 1.25rem;
   color: var(--text);
+  margin: 0;
 }
 
 .form-grid {
@@ -396,7 +473,7 @@ async function confirmCreate() {
   color: var(--text);
 }
 
-.form-select, .form-textarea, .form-file {
+.form-select, .form-textarea {
   padding: 0.55rem 0.85rem;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
@@ -404,15 +481,52 @@ async function confirmCreate() {
   font-family: inherit;
   color: var(--text);
   background: white;
-  transition: all 0.2s;
+  transition: all var(--transition);
 }
 .form-select:focus, .form-textarea:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.08);
 }
 
 .form-textarea { resize: vertical; }
+
+/* File upload drop zone */
+.file-drop-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 1.25rem;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+}
+.file-drop-zone:hover {
+  border-color: var(--primary-300);
+  background: var(--primary-50);
+}
+.upload-icon {
+  color: var(--text-muted);
+}
+.file-drop-zone:hover .upload-icon {
+  color: var(--primary);
+}
+.file-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.file-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.file-hidden {
+  display: none;
+}
 
 .form-actions {
   display: flex;
@@ -438,8 +552,9 @@ async function confirmCreate() {
 .duplicate-list li { margin-bottom: 0.25rem; }
 
 @media (max-width: 768px) {
-  .stepper { gap: 0.35rem; }
+  .stepper { gap: 0; }
   .step-label { display: none; }
+  .step-connector { flex: 0 0 12px; }
   .form-grid { grid-template-columns: 1fr; }
   .form-card { padding: 1.25rem; }
   .page-title h1 { font-size: 1.3rem; }

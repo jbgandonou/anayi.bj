@@ -4,6 +4,7 @@ import { childrenService } from '@/services/children.service'
 import AppButton from '@/components/common/AppButton.vue'
 import AppModal from '@/components/common/AppModal.vue'
 import type { ChildListItem } from '@/types/child'
+import { Handshake, RefreshCw } from 'lucide-vue-next'
 
 const children = ref<ChildListItem[]>([])
 const loading = ref(false)
@@ -71,9 +72,14 @@ async function updateStatus() {
 <template>
   <div class="sponsorship-page">
     <div class="page-header">
-      <div>
-        <h1>Gestion du parrainage</h1>
-        <p class="subtitle">{{ total }} bénéficiaire{{ total > 1 ? 's' : '' }}</p>
+      <div class="page-title-group">
+        <div class="page-icon">
+          <Handshake :size="22" :stroke-width="1.8" />
+        </div>
+        <div>
+          <h1>Gestion du parrainage</h1>
+          <p class="subtitle">{{ total }} bénéficiaire{{ total > 1 ? 's' : '' }}</p>
+        </div>
       </div>
     </div>
 
@@ -119,11 +125,13 @@ async function updateStatus() {
             <td>{{ child.village }}</td>
             <td>
               <span class="badge" :class="statusClass(child.sponsorshipStatus)">
+                <span class="badge-dot" :class="`dot-${statusClass(child.sponsorshipStatus)}`"></span>
                 {{ statusLabel(child.sponsorshipStatus) }}
               </span>
             </td>
             <td>
               <AppButton variant="secondary" size="sm" @click="openStatusModal(child)">
+                <template #icon><RefreshCw :size="13" :stroke-width="2" /></template>
                 Modifier statut
               </AppButton>
             </td>
@@ -173,6 +181,22 @@ async function updateStatus() {
   align-items: center;
   margin-bottom: 1.75rem;
 }
+.page-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+.page-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius);
+  background: var(--primary-50);
+  color: var(--primary-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
 .page-header h1 { font-size: 1.6rem; font-weight: 800; color: var(--text); letter-spacing: -0.02em; margin: 0; }
 .subtitle { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.15rem; }
 
@@ -184,6 +208,7 @@ async function updateStatus() {
   padding: 1.25rem;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  border: 1px solid var(--border-light);
 }
 
 .filter-group { display: flex; flex-direction: column; gap: 0.35rem; }
@@ -196,12 +221,12 @@ async function updateStatus() {
   font-family: inherit;
   color: var(--text);
   background: white;
-  transition: border-color 0.2s;
+  transition: all var(--transition);
 }
 .filter-select:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.08);
 }
 
 .table-wrapper {
@@ -209,6 +234,7 @@ async function updateStatus() {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   overflow-x: auto;
+  border: 1px solid var(--border-light);
 }
 
 .data-table {
@@ -230,21 +256,37 @@ async function updateStatus() {
 
 .data-table td {
   padding: 0.85rem 1.25rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-light);
   font-size: 0.875rem;
 }
 
-.data-table tbody tr { transition: background 0.1s; }
-.data-table tbody tr:hover { background: var(--bg); }
+.data-table tbody tr { transition: background var(--transition); }
+.data-table tbody tr:hover { background: var(--primary-50); }
 
 .ref-cell { font-family: monospace; font-size: 0.8rem; color: var(--text-muted); }
 .name-link { color: var(--primary); text-decoration: none; font-weight: 600; }
 .name-link:hover { text-decoration: underline; }
 
-.badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
 .badge-pending { background: #fef3c7; color: #92400e; }
+.dot-badge-pending { background: #f59e0b; }
 .badge-sponsored { background: #dcfce7; color: #166534; }
+.dot-badge-sponsored { background: #10b981; }
 .badge-not-eligible { background: #fee2e2; color: #991b1b; }
+.dot-badge-not-eligible { background: #ef4444; }
 
 .modal-field { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.35rem; }
 
