@@ -8,22 +8,22 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  const hashedPassword = await bcrypt.hash('changez-moi-immediatement', 12);
+  const hashedPassword = await bcrypt.hash('Admin@2026', 12);
 
   await prisma.user.upsert({
-    where: { email: 'admin@anayi.bj' },
+    where: { email: 'jbgandonou@gmail.com' },
     update: {},
     create: {
-      firstName: 'Admin',
-      lastName: 'Anayi',
-      email: 'admin@anayi.bj',
+      firstName: 'Jean-Baptiste',
+      lastName: 'Gandonou',
+      email: 'jbgandonou@gmail.com',
       password: hashedPassword,
       role: Role.ADMIN,
       isActive: true,
     },
   });
 
-  console.log('Seed terminé : admin@anayi.bj créé');
+  console.log('Seed terminé : admin jbgandonou@gmail.com créé');
 }
 
 main()
@@ -33,4 +33,5 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
+    await pool.end();
   });
