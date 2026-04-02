@@ -28,3 +28,7 @@ services:
         value: /app/uploads
       - key: PORT
         value: 3000
+      - key: FRONTEND_URL
+        value: https://anayi-bj.vercel.app
+      - key: GOOGLE_CLIENT_ID
+        sync: false
